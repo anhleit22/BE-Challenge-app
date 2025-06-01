@@ -5,20 +5,18 @@ var response = require('../config/respon/index');
 const genAI = new GoogleGenerativeAI('AIzaSyCepntRTz226oTX7_QXMtx1G-CTcQzL24I');
 
 router.post('/', async function(req, res, next) {
-    const { socialNetwork, subject, tone } = req.body;
-
+    const { topic } = req.body;
+    if(topic){
     try {
     const model = genAI.getGenerativeModel({ model: 'models/gemini-1.5-flash' });
 
-    const prompt = ` Generate a social media post for ${socialNetwork}.
-                    Topic: ${subject}
-                    Tone: ${tone}
-                    Return ONLY JSON like this about 2-3 object data:
+  
+    const prompt = ` Generate a list ideas for topic:${topic}.
+                    Return ONLY JSON like this about 10 object data:
                     {
-                        "social": "short caption or tagline",
-                        "content": "main body (1-2 paragraphs)",
-                        "tone": "call-to-action text"
-                    }`;
+                        "title_topic": "short caption or tagline",
+                        "tag": "1-2 tag",
+                    }`;                
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
@@ -41,6 +39,9 @@ router.post('/', async function(req, res, next) {
   } catch (err) {
     console.error('Error generating content:', err);
     res.status(500).json({ ...response,message: err.statusText });
+  } 
+  } else {
+    res.status(500).json({ ...response,message: "Topic Undefined" });
   }
 });
 
