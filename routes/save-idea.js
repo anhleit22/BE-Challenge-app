@@ -4,16 +4,18 @@ const { db } = require("../config/firebase/servicesFirebase");
 
 router.post('/', async function(req, res, next) {
   try {
-    const data = req.body;
-
-    if (!data || !data.content || !data.social || !data.tone) {
+    const data = {
+      topic: req.body.social,
+      data: req.body.content
+      };
+    if (!data || !data.topic || !data.data) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     // 🔍 Kiểm tra trùng dữ liệu
     const querySnapshot = await db.collection("generated_topic")
-      .where("social", "==", data.social)
-      .where("tone", "==", data.tone)
+      .where("topic", "==", data.topic)
+      .where("data", "==", data.data)
       .get();
 
     if (!querySnapshot.empty) {
