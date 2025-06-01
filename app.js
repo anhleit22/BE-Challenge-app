@@ -6,9 +6,11 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
+var saveRouter  = require('./routes/save-post');
+var generationRoute = require('./routes/generation');
 var app = express();
 const corsOptions = {
-  origin: 'http://localhost:3002', // FE của bạn
+  origin: true, // FE của bạn
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
   credentials: true,
@@ -25,6 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/save', saveRouter);
+app.use('/api/generate-post-captions', generationRoute);
 
 
 module.exports = app;

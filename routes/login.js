@@ -12,7 +12,7 @@ router.post('/', async function(req, res, next) {
         message: 'Phone is required'
       });
     }
-    // Basic phone number validation
+
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
     if (!phoneRegex.test(req.body.phone)) {
       return res.status(400).json({
@@ -28,12 +28,31 @@ router.post('/', async function(req, res, next) {
       createdAt: new Date().toISOString()
     };
 
-    const docRef = await db.collection("users").add(userData);
-    
+    // Kiểm tra nếu phone đã tồn tại thì update
+    const usersRef = await db.collection("users")
+      .where('phone', '==', req.body.phone)
+      .get();
+
+    let docId;
+
+    if (!usersRef.empty) {
+      // Nếu đã có thì update OTP
+      const doc = usersRef.docs[0];
+      docId = doc.id;
+      await db.collection("users").doc(docId).update({
+        otp: otp,
+        createdAt: new Date().toISOString()
+      });
+    } else {
+      // Nếu chưa có thì thêm mới
+      const docRef = await db.collection("users").add(userData);
+      docId = docRef.id;
+    }
+
     return res.status(200).json({
       ...response,
       data: {
-        userId: docRef.id,
+        userId: docId,
         message: 'OTP sent successfully'
       }
     });
@@ -45,6 +64,7 @@ router.post('/', async function(req, res, next) {
     });
   }
 });
+
 router.post('/validate', async function(req, res, next) {
   try {
     if (!req.body.phone) {
