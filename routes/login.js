@@ -4,6 +4,9 @@ var response = require('../config/respon/index');
 const { generateOTP } = require('../ultils');
 const { db } = require("../config/firebase/servicesFirebase");
 
+let docId;    
+let phone;    
+
 router.post('/', async function(req, res, next) {
   try {
     if (!req.body.phone) {
@@ -33,7 +36,6 @@ router.post('/', async function(req, res, next) {
       .where('phone', '==', req.body.phone)
       .get();
 
-    let docId;
 
     if (!usersRef.empty) {
       // Nếu đã có thì update OTP
@@ -48,6 +50,7 @@ router.post('/', async function(req, res, next) {
       const docRef = await db.collection("users").add(userData);
       docId = docRef.id;
     }
+    phone = req.body.phone;
 
     return res.status(200).json({
       ...response,
@@ -106,9 +109,14 @@ router.post('/validate', async function(req, res, next) {
       }
     });
 
+    let data = {
+      id: docId,
+      phone: phone
+    }
     if (isValid) {
       return res.status(200).json({
         ...response,
+        data: data,
         message: 'OTP validated successfully'
       });
     } else {

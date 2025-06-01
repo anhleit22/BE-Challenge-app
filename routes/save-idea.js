@@ -6,9 +6,10 @@ router.post('/', async function(req, res, next) {
   try {
     const data = {
       topic: req.body.social,
-      data: req.body.content
+      data: req.body.content,
+      id_author: req.body.id_author
       };
-    if (!data || !data.topic || !data.data) {
+    if (!data || !data.topic || !data.data || !data.id_author) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -16,6 +17,7 @@ router.post('/', async function(req, res, next) {
     const querySnapshot = await db.collection("generated_topic")
       .where("topic", "==", data.topic)
       .where("data", "==", data.data)
+      .where("id_author", "==", data.id_author)
       .get();
 
     if (!querySnapshot.empty) {
