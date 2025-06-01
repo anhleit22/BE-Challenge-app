@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var saveRouter  = require('./routes/save-post');
+var saveIdeaRouter  = require('./routes/save-idea');
 var ideasRouter  = require('./routes/post-ideas');
 var ideasPostRouter  = require('./routes/generation-ideas');
 
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/save', saveRouter);
+app.use('/api/save-ideas', saveIdeaRouter);
 app.use('/api/post-ideas', ideasRouter);
 app.use('/api/generate-list-ideas', ideasPostRouter);
 app.use('/api/generate-post-captions', generationRoute);
